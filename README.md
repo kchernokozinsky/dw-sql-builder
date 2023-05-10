@@ -19,16 +19,33 @@ To get started with DW-SQL-Builder, simply clone the repository and follow the i
 
 DW-SQL-Builder is easy to use and can be integrated with your Mule application in a few simple steps:
 
-```xml
+DW script: 
+```
 
-example example example example
-example example example example
-example example example example
-example example example example
-example example example example
+%dw 2.0
+output text/plain
+import * from SQLBuilder
+import * from Transformer
 
+--- 
+SELECT columns  ["a", "b"] 
+appendColumn "c"
+FROM ("a" INNERJOIN "b" ON condition("column1", "=", "value1") AS "lol") 
+WHERE (condition("column1", "=", "value1") AND NOT(condition("column2", "!=", "value1")) OR condition("column2", "=", "value2")) 
+build true
 
 ```
+
+Output:
+
+```
+
+SELECT a, b, c
+FROM a INNER JOIN b ON column1 = 'value1'
+WHERE ((column1 = 'value1' AND column2 != 'value1') OR column2 = 'value2')
+
+```
+
 For more usage examples, check out the documentation.
 
 Contributing
