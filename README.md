@@ -48,6 +48,13 @@ WHERE ((column1 = 'value1' AND column2 != 'value1') OR column2 = 'value2')
 
 For more usage examples, check out the documentation.
 
+## TO DO
+1. group By ❌
+2. order by ❌
+3. limit    ❌
+4. connector db parameters ❌
+4. alias ❌
+
 Contributing
 Contributions to DW-SQL-Builder are always welcome! If you have any ideas, suggestions or bug reports, please open an issue or a pull request.
 
