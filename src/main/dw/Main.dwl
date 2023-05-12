@@ -1,8 +1,10 @@
 %dw 2.0
-output text/plain
+output application/json
 import * from builder::SQLBuilder
+
 --- 
 SELECT columns ["a", "dsf"]
 FROM ("a" AS "dsds" INNERJOIN "b" ON condition("column1", "=", "value1")  INNERJOIN "c" ON condition("column1", "=", "value1")) 
-WHERE (condition("column1", "=", "value1") AND NOT(condition("column2", "!=", "value1")) OR condition("column2", "=", "value2")) 
-build true
+WHERE ( NOT (condition("column1", "=", "value1")) AND NOT("column2 <> 'c'") OR "column2 <> 'c'") 
+build false
+

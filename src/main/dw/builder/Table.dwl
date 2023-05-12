@@ -67,16 +67,16 @@ fun AS(table : String, alias : String) : Table = if (table is String) {name: tab
                                                 else table update {
                                                             case .alias! -> alias
                                                             } 
-
 fun tableToSQLQuery(table: Table): String = do {
-    fun alias(table : Object) = if (keysOf(table) contains "alias" as Key) "AS $(table.alias)" else ""
-    fun castCondition(val) = val as JoinedTable default val as SimpleJoinedTable  default val as String
-    fun toStr(val: String) = val as String
-
+    fun alias(table : Object) = if (keysOf(table) contains "alias" as Key) "AS $(table.alias)" 
+                                else ""
+    fun castTable(val) = val as JoinedTable default 
+                         val as SimpleJoinedTable default 
+                         val as String
+    fun toStr(val: String) = val
     fun toStr(val: TableAlias) =  val.name ++ " " ++ alias(val)
-    fun toStr(val: SimpleJoinedTable) =  "$(toStr(val.leftTable)) $(val.joinType) $(toStr(val.rightTable))" ++ 
-                                        (" ON $(conditionToSQLQuery(val.joinCondition))" default "")
-    fun toStr(val: JoinedTable) =  "$(toStr(castCondition(val.leftTable))) $(val.joinType) $(toStr(castCondition(val.rightTable))) $(alias(val))"
+    fun toStr(val: SimpleJoinedTable) =  "$(toStr(val.leftTable)) $(val.joinType) $(toStr(val.rightTable))" ++ " ON $(conditionToSQLQuery(val.joinCondition))"
+    fun toStr(val: JoinedTable) =  "($(toStr(castTable(val.leftTable)))) $(val.joinType) $(toStr(castTable(val.rightTable)))" ++ " ON $(conditionToSQLQuery(val.joinCondition))"
     ---
-    "FROM $(toStr(castCondition(table)))"
+    "FROM $(toStr(castTable(table)))"
 }

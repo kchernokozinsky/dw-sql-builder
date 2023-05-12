@@ -3,6 +3,7 @@
 // --- CONDITION TYPES ---
 
 type Condition = 
+String |
 SimpleCondition |
 NestedInnerCondition
 
@@ -61,14 +62,14 @@ fun OR(lCondition : Condition, rCondition : Condition) : Condition =
     rCondition: rCondition
 }
 
-fun NOT(condition: Condition) = condition  update {
+fun NOT(condition: Condition) = if (condition is String) "NOT($(condition))"  else condition  update {
     case .biOperation! -> "NOT"
 }
 
 fun conditionToSQLQuery(condition) = do {
     fun castCondition(val : Condition | String | Number) = val as NestedInnerCondition default val as SimpleCondition  default val as String
     fun conditionToSQL(condition: NestedInnerCondition) = "($(conditionToSQL(castCondition(condition.lCondition))) $(condition.biOperation) $(conditionToSQL(castCondition(condition.rCondition))))"
-    fun conditionToSQL(condition: SimpleCondition) = "$(condition.lvalue) $(condition.operator) '$(condition.rvalue)'"
+    fun conditionToSQL(condition: SimpleCondition) = if (keysOf(condition) contains "biOperation" as Key) "NOT($(condition.lvalue) $(condition.operator) '$(condition.rvalue)')" else "$(condition.lvalue) $(condition.operator) '$(condition.rvalue)'"
     fun conditionToSQL(condition: String | Number) = condition as String
     ---
     conditionToSQL(castCondition(condition default ""))}

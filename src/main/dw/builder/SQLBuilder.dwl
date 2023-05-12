@@ -39,4 +39,5 @@ fun ON (join: JoinedTable, condition : Condition) : Table = builder::Table::ON(j
 
 fun AS(table : String, alias : String) : Table = builder::Table::AS(table, alias)
 
-fun build(sql: SQLStruct, flag: Boolean) : SQLQuery = "$(queryBeginning(sql))\n$(tableToSQLQuery(sql.from))\nWHERE $(conditionToSQLQuery(sql.where))"
+fun build(sql: SQLStruct, flag: Boolean = true) : SQLQuery | SQLStruct = if (flag) "$(queryBeginning(sql))\n$(tableToSQLQuery(sql.from))\nWHERE $(conditionToSQLQuery(sql.where))"
+                                                             else sql
