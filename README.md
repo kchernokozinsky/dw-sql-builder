@@ -24,14 +24,12 @@ DW script:
 
 %dw 2.0
 output text/plain
-import * from SQLBuilder
-import * from Transformer
+import * from builder::SQLBuilder
 
 --- 
-SELECT columns  ["a", "b"] 
-appendColumn "c"
-FROM ("a" INNERJOIN "b" ON condition("column1", "=", "value1") AS "lol") 
-WHERE (condition("column1", "=", "value1") AND NOT(condition("column2", "!=", "value1")) OR condition("column2", "=", "value2")) 
+SELECT columns ["a", "b"]
+FROM ("a" AS "alias" INNERJOIN "b" ON condition("column1", "=", "value1")  INNERJOIN "c" ON condition("column1", "=", "value1")) 
+WHERE ( NOT (condition("column1", "=", "value1")) AND NOT("column2 <> 'c'") OR "column2 <> 'c'") 
 build true
 
 ```
@@ -40,9 +38,9 @@ Output:
 
 ```
 
-SELECT a, b, c
-FROM a INNER JOIN b ON column1 = 'value1'
-WHERE ((column1 = 'value1' AND column2 != 'value1') OR column2 = 'value2')
+SELECT a, b
+FROM (a AS alias INNER JOIN b ON column1 = 'value1') INNER JOIN c ON column1 = 'value1'
+WHERE ((NOT(column1 = 'value1') AND NOT(column2 <> 'c')) OR column2 <> 'c')
 
 ```
 
