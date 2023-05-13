@@ -19,7 +19,7 @@ type Operation =
 type SQLStruct = {
                  operation: Operation,
                  columns: Array<Column> | "*",
-                 from: Table,
+                 from: Table | SQLStruct,
                  where?: Condition
                  }
                 
@@ -42,7 +42,7 @@ fun appendColumn (sql : SQLStruct, col : Column) : SQLStruct = sql  update {
     case .columns-> if ($ is Array) $ + col else '*'
 }
 
-fun FROM (sql : SQLStruct, table : Table) : SQLStruct = sql update {
+fun FROM (sql : SQLStruct, table : Table | SQLStruct) : SQLStruct = sql update {
     case .from -> table
 }
 

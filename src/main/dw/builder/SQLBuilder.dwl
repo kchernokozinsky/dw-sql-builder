@@ -23,7 +23,7 @@ fun columns (sql : SQLStruct, cols : Array<Column>) : SQLStruct = builder::SQL::
 
 fun appendColumn (sql : SQLStruct, col : Column) : SQLStruct = builder::SQL::appendColumn(sql, col)
 
-fun FROM (sql : SQLStruct, table : Table) : SQLStruct = builder::SQL::FROM(sql, table)
+fun FROM (sql : SQLStruct, table : Table | SQLStruct) : SQLStruct = builder::SQL::FROM(sql, table)
 
 fun WHERE(sql : SQLStruct, where : Condition) : SQLStruct = builder::SQL::WHERE(sql, where)
 
@@ -39,5 +39,19 @@ fun ON (join: JoinedTable, condition : Condition) : Table = builder::Table::ON(j
 
 fun AS(table : String, alias : String) : Table = builder::Table::AS(table, alias)
 
-fun build(sql: SQLStruct, flag: Boolean = true) : SQLQuery | SQLStruct = if (flag) "$(queryBeginning(sql))\n$(tableToSQLQuery(sql.from))\nWHERE $(conditionToSQLQuery(sql.where))"
-                                                             else sql
+fun build(sql: SQLStruct, flag: Boolean = true, indent: String = "") : SQLQuery = do {
+    var newLine = "\n"
+    fun go(sql: SQLStruct, flag: Boolean, indent: String) = 
+    log("Indent",indent) ++
+    "(" ++ 
+    queryBeginning(sql) ++ 
+    newLine ++
+    indent ++ (if (sql.from is Table) tableToSQLQuery(sql.from) 
+               else "FROM\n" ++ go(sql.from, true, indent ++"\t")) ++
+    newLine ++
+    indent ++ 
+    "WHERE" ++ 
+    conditionToSQLQuery(sql.where) ++
+    ")"
+    ---
+    go(sql, flag, indent)[1 to -2]}
