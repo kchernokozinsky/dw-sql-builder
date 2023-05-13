@@ -63,20 +63,29 @@ fun ON (join: JoinedTable, condition : Condition) : Table = {
     joinCondition: condition                   
 }
 
-fun AS(table : String, alias : String) : Table = if (table is String) {name: table, alias: alias}
-                                                else table update {
-                                                            case .alias! -> alias
-                                                            } 
+fun AS(table : String, alias : String) : Table = 
+    if (table is String) 
+        {name: table, alias: alias}
+    else 
+        table update {
+            case .alias! -> alias
+        } 
+
 fun tableToSQLQuery(table: Table): String = do {
-    fun alias(table : Object) = if (keysOf(table) contains "alias" as Key) "AS $(table.alias)" 
-                                else ""
-    fun castTable(val) = val as JoinedTable default 
-                         val as SimpleJoinedTable default 
-                         val as String
+    fun alias(table : Object) = 
+        if (keysOf(table) contains "alias" as Key) 
+            "AS $(table.alias)" 
+        else ""
+    fun castTable(val) = 
+        val as JoinedTable default 
+        val as SimpleJoinedTable default 
+        val as String
     fun toStr(val: String) = val
     fun toStr(val: TableAlias) =  val.name ++ " " ++ alias(val)
-    fun toStr(val: SimpleJoinedTable) =  "$(toStr(val.leftTable)) $(val.joinType) $(toStr(val.rightTable))" ++ " ON $(conditionToSQLQuery(val.joinCondition))"
-    fun toStr(val: JoinedTable) =  "($(toStr(castTable(val.leftTable)))) $(val.joinType) $(toStr(castTable(val.rightTable)))" ++ " ON $(conditionToSQLQuery(val.joinCondition))"
+    fun toStr(val: SimpleJoinedTable) =  
+        "$(toStr(val.leftTable)) $(val.joinType) $(toStr(val.rightTable))" ++ " ON $(conditionToSQLQuery(val.joinCondition))"
+    fun toStr(val: JoinedTable) =  
+        "($(toStr(castTable(val.leftTable)))) $(val.joinType) $(toStr(castTable(val.rightTable)))" ++ " ON $(conditionToSQLQuery(val.joinCondition))"
     ---
     "FROM $(toStr(castTable(table)))"
 }

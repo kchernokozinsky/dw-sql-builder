@@ -10,18 +10,18 @@ type Operation =
     "SELECT" |   // Retrieve data from a database
     "UPDATE" |   // Update data in a database
     "DELETE" |   // Delete data from a database
-    "INSERT" |   // Insert data into a database
-    "CREATE" |   // Create a new table
-    "DROP" |     // Delete a table
-    "ALTER" |    // Modify a table
-    "TRUNCATE"   // Empty a table
+    "INSERT"     // Insert data into a database
 
 type SQLStruct = {
-                 operation: Operation,
-                 columns: Array<Column> | "*",
-                 from: Table | SQLStruct,
-                 where?: Condition
-                 }
+    operation: Operation,
+    columns: Array<Column> | "*",
+    from: Table | SQLStruct,
+    where?: Condition,
+    groupBy?: Array<Column>,
+    having?: Condition,
+    orderBy?: Array<Column>,
+    limit?: Number
+}
                 
 var SQL : SQLStruct = {
                  operation: "SELECT",
@@ -34,7 +34,7 @@ fun operation(sql : SQLStruct, op : Operation) : SQLStruct = sql  update {
     case .operation -> op
 }
 
-fun columns (sql : SQLStruct, cols : Array<Column>) : SQLStruct = sql  update {
+fun columns (sql : SQLStruct, cols : Array<Column> | "*") : SQLStruct = sql  update {
     case .columns -> cols
 }
 
@@ -50,4 +50,31 @@ fun WHERE(sql : SQLStruct, where : Condition) : SQLStruct = sql  update {
     case .where! ->  where
 }
 
-fun queryBeginning(sql: SQLStruct): String = "$(sql.operation) $(sql.columns reduce((item, acc = "") -> acc ++ (if (acc != "") ", " else "") ++ item))"
+// fun WHERE(sql : SQLStruct, where : Condition) : SQLStruct = sql  update {
+//     case .where! ->  where
+// }
+
+fun GROUPBY(sql : SQLStruct, cols : Array<Column>) : SQLStruct = sql  update {
+    case .groupBy! -> cols
+}
+
+fun HAVING(sql : SQLStruct, condition : Condition) : SQLStruct = sql  update {
+    case .having! ->  condition
+}
+
+// fun HAVING(sql : SQLStruct, not : (Condition) -> Condition) : (Condition) -> SQLStruct = (condition) -> sql  update {
+//     case .having! ->  not(condition)
+// }
+
+// fun condition(having: (Condition) -> SQLStruct, condition: String) : SQLStruct = having(condition as String)
+
+fun ORDERBY(sql : SQLStruct, cols : Array<Column>) : SQLStruct = sql  update {
+    case .orderBy! -> cols
+}
+
+fun LIMIT(sql : SQLStruct, limit : Number) : SQLStruct = sql  update {
+    case .limit! -> limit
+}
+
+
+fun queryBeginning(sql: SQLStruct): String = "$(sql.operation) $( if(sql.columns == "*") "*" else sql.columns reduce((item, acc = "") -> acc ++ (if (acc != "") ", " else "") ++ item))"
