@@ -4,11 +4,11 @@
 type Condition = 
     String |
     SimpleCondition |
-    NestedInnerCondition
+    NestedInnerCondition | 
+    Not
 
 type SimpleCondition = {
     lvalue: String | Number,
-    biOperation?: BiOperation,
     operator: Operator | UnaryOperator,
     rvalue?: String | Number
 }
@@ -22,6 +22,8 @@ type NestedInnerCondition = {
 type NestedCondition = {
     conditions: Array<Condition | BiOperation>
 }
+
+type Not = { not: Condition}
 
 type Operator =
     "=" |        // Equal to
@@ -45,8 +47,7 @@ type UnaryOperator =
 
 type BiOperation = 
     "OR" |       // Logic OR operation, returns true if any of the conditions are true
-    "AND" |      // Logic AND operation, returns true if all the conditions are true
-    "NOT"        // Logic NOT operation, returns true if the condition is false
+    "AND"     // Logic AND operation, returns true if all the conditions are true
 // --- CONDITION TYPES ---
 
 fun condition(lvalue : String | Number, op : UnaryOperator) : Condition = {
@@ -71,28 +72,19 @@ fun OR(lCondition : Condition, rCondition : Condition) : Condition = {
     rCondition: rCondition
 }
 
-fun NOT(condition: Condition) = 
-    if (condition is String) 
-        "NOT ($(condition))"  
-    else 
-        condition  update {
-            case .biOperation! -> "NOT"
-        }
-
-
+fun NOT(condition: Condition) = not: condition
 
 fun conditionToSQLQuery(condition) = do {
     fun castCondition(val : Condition | String | Number) = 
         val as NestedInnerCondition default 
         val as SimpleCondition default 
+        val as Not default
         val as String
     fun conditionToSQL(condition: NestedInnerCondition) = 
         "($(conditionToSQL(castCondition(condition.lCondition))) $(condition.biOperation) $(conditionToSQL(castCondition(condition.rCondition))))"
+
+    fun conditionToSQL(condition: Not) = "NOT (" ++ conditionToSQL(castCondition(condition.not)) ++ ")"
    fun conditionToSQL(condition: SimpleCondition) =
-        (if (keysOf(condition) contains "biOperation" as Key)
-            "NOT "
-        else
-            "") ++
         "$(condition.lvalue) $(condition.operator)" ++
         (if (condition.rvalue?)
             " $(condition.rvalue as String)"

@@ -57,9 +57,10 @@ For more usage examples, check out the documentation.
 2. order by ✅
 3. limit    ✅
 4. fix alias ❌
-5. fix NOT function
+5. fix NOT function ✅
+6. Implement operators: ``BETWEEN LIKE IN EXISTS ANY ALL`` ❌ 
 
-Contributing
+## Contributing
 Contributions to DW-SQL-Builder are always welcome! If you have any ideas, suggestions or bug reports, please open an issue or a pull request.
 
 Feel free to customize this template with your project's specific information.

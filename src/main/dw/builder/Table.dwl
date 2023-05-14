@@ -73,7 +73,7 @@ fun AS(table : String, alias : String) : Table =
 
 fun tableToSQLQuery(table: Table): String = do {
     fun alias(table : Object) = 
-        if (keysOf(table) contains "alias" as Key) 
+        if (table.alias?) 
             "AS $(table.alias)" 
         else ""
     fun castTable(val) = 

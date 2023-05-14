@@ -50,10 +50,6 @@ fun WHERE(sql : SQLStruct, where : Condition) : SQLStruct = sql  update {
     case .where! ->  where
 }
 
-// fun WHERE(sql : SQLStruct, where : Condition) : SQLStruct = sql  update {
-//     case .where! ->  where
-// }
-
 fun GROUPBY(sql : SQLStruct, cols : Array<Column>) : SQLStruct = sql  update {
     case .groupBy! -> cols
 }
