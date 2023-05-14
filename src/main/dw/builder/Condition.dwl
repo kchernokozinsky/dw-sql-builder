@@ -59,8 +59,6 @@ fun condition(lvalue : String | Number, op : Operator, rvalue : String | Number)
     rvalue: rvalue 
 }
 
-
-
 fun AND(lCondition : Condition, rCondition : Condition) : Condition = {
     lCondition: lCondition,
     biOperation: "AND",

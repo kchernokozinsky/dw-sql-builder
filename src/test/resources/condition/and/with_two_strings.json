@@ -1,0 +1,5 @@
+{
+    "lCondition": "column1 = 'val1",
+    "biOperation": "AND",
+    "rCondition": "column2 <> 'c'"
+  }

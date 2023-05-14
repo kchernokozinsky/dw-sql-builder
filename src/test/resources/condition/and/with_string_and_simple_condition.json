@@ -1,0 +1,9 @@
+{
+    "lCondition": {
+      "lvalue": "column1",
+      "operator": "=",
+      "rvalue": "value1"
+    },
+    "biOperation": "AND",
+    "rCondition": "column2 <> 'c'"
+  }

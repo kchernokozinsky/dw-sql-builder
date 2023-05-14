@@ -10,8 +10,11 @@ var DELETE = SQL operation "DELETE"
 
 fun condition(lvalue : String | Number, op : UnaryOperator) : Condition = 
     builder::Condition::condition(lvalue, op)
+
 fun condition(lvalue : String | Number, op : Operator, rvalue : String | Number) : Condition = 
     builder::Condition::condition(lvalue, op, rvalue)
+
+fun condition(func: (Condition) -> SQLStruct, condition: String) : SQLStruct = func(condition as String)
 
 fun AND(lCondition : Condition, rCondition : Condition) : Condition =  
     builder::Condition::AND(lCondition, rCondition)
@@ -30,13 +33,23 @@ fun appendColumn (sql : SQLStruct, col : Column) : SQLStruct =
 fun FROM (sql : SQLStruct, table : Table | SQLStruct) : SQLStruct = 
     builder::SQL::FROM(sql, table)
 
+fun FROM (sql : SQLStruct, table : Table | SQLStruct) : SQLStruct = 
+    builder::SQL::FROM(sql, table)
+
 fun WHERE(sql : SQLStruct, where : Condition) : SQLStruct = 
     builder::SQL::WHERE(sql, where)
+
+fun WHERE(sql : SQLStruct, not : (Condition) -> Condition) : (Condition) -> SQLStruct = (condition) -> sql  update {
+    case .where! ->  not(condition)
+}
 
 fun GROUPBY(sql : SQLStruct, cols : Array<Column>) : SQLStruct =  builder::SQL::GROUPBY(sql, cols)
 
 fun HAVING(sql : SQLStruct, condition : Condition) : SQLStruct = builder::SQL::HAVING(sql, condition)
 
+fun HAVING(sql : SQLStruct, not : (Condition) -> Condition) : (Condition) -> SQLStruct = (condition) -> sql  update {
+    case .having! ->  not(condition)
+}
 fun ORDERBY(sql : SQLStruct, cols : Array<Column>) : SQLStruct = builder::SQL::ORDERBY(sql, cols)
 
 fun LIMIT(sql : SQLStruct, limit : Number) : SQLStruct = sql  update {

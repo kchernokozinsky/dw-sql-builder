@@ -62,12 +62,6 @@ fun HAVING(sql : SQLStruct, condition : Condition) : SQLStruct = sql  update {
     case .having! ->  condition
 }
 
-// fun HAVING(sql : SQLStruct, not : (Condition) -> Condition) : (Condition) -> SQLStruct = (condition) -> sql  update {
-//     case .having! ->  not(condition)
-// }
-
-// fun condition(having: (Condition) -> SQLStruct, condition: String) : SQLStruct = having(condition as String)
-
 fun ORDERBY(sql : SQLStruct, cols : Array<Column>) : SQLStruct = sql  update {
     case .orderBy! -> cols
 }

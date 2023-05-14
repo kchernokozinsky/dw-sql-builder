@@ -1,0 +1,17 @@
+{
+    "lCondition": {
+      "lCondition": {
+        "lvalue": "column1",
+        "operator": "=",
+        "rvalue": "value1"
+      },
+      "biOperation": "AND",
+      "rCondition": {
+        "lvalue": "column2",
+        "operator": ">=",
+        "rvalue": "value2"
+      }
+    },
+    "biOperation": "AND",
+    "rCondition": "column2 <> 'c'"
+  }
