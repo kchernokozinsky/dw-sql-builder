@@ -66,5 +66,4 @@ fun LIMIT(sql : SQLStruct, limit : Number) : SQLStruct = sql  update {
     case .limit! -> limit
 }
 
-
 fun queryBeginning(sql: SQLStruct): String = "$(sql.operation) $( if(sql.columns == "*") "*" else sql.columns reduce((item, acc = "") -> acc ++ (if (acc != "") ", " else "") ++ item))"

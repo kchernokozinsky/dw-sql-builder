@@ -5,6 +5,7 @@ type Condition =
     String |
     SimpleCondition |
     NestedInnerCondition | 
+    Between|
     Not
 
 type SimpleCondition = {
@@ -24,6 +25,14 @@ type NestedCondition = {
 }
 
 type Not = { not: Condition}
+
+type Between = {"between": {
+    "column": String,
+    "fstValue": Value,
+    "sndValue": Value
+}}
+
+type Value = String | Number
 
 type Operator =
     "=" |        // Equal to
@@ -72,6 +81,16 @@ fun OR(lCondition : Condition, rCondition : Condition) : Condition = {
     rCondition: rCondition
 }
 
+fun BETWEEN(col: String, fst: Value): (Value) -> Between = (snd) -> {
+    between: {
+            "column": col,
+            "fstValue": fst,
+            "sndValue": snd
+    }
+}
+
+fun AND (func: (String) -> Between, snd: Value): Between = func(snd)
+
 fun NOT(condition: Condition) = not: condition
 
 fun conditionToSQLQuery(condition) = do {
@@ -79,11 +98,15 @@ fun conditionToSQLQuery(condition) = do {
         val as NestedInnerCondition default 
         val as SimpleCondition default 
         val as Not default
+        val as Between default
         val as String
     fun conditionToSQL(condition: NestedInnerCondition) = 
         "($(conditionToSQL(castCondition(condition.lCondition))) $(condition.biOperation) $(conditionToSQL(castCondition(condition.rCondition))))"
 
     fun conditionToSQL(condition: Not) = "NOT (" ++ conditionToSQL(castCondition(condition.not)) ++ ")"
+
+    fun conditionToSQL(condition: Between) = condition.between.column ++ " BETWEEN " ++ condition.between.fstValue as String ++ " AND " ++ condition.between.sndValue
+
    fun conditionToSQL(condition: SimpleCondition) =
         "$(condition.lvalue) $(condition.operator)" ++
         (if (condition.rvalue?)

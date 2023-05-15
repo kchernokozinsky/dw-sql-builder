@@ -22,6 +22,12 @@ fun AND(lCondition : Condition, rCondition : Condition) : Condition =
 fun OR(lCondition : Condition, rCondition : Condition) : Condition = 
     builder::Condition::OR(lCondition, rCondition)
 
+fun BETWEEN(col: String, fst: Value): (Value) -> Between =  
+    builder::Condition::BETWEEN(col, fst)
+
+fun AND (func: (String) -> Between, snd: Value): Between = 
+    builder::Condition::AND(func, snd)
+
 fun NOT(condition: Condition) = builder::Condition::NOT(condition)
 
 fun columns (sql : SQLStruct, cols : Array<Column> | "*") : SQLStruct = 
