@@ -58,7 +58,7 @@ For more usage examples, check out the documentation.
 3. limit    ✅
 4. fix alias ❌
 5. fix NOT function ✅
-6. Implement operators: ``BETWEEN LIKE IN EXISTS ANY ALL`` ❌ 
+6. Implement operators: ``BETWEEN ✅ LIKE ❌ IN ❌ EXISTS ❌ ANY ❌ ALL ❌``  
 
 ## Contributing
 Contributions to DW-SQL-Builder are always welcome! If you have any ideas, suggestions or bug reports, please open an issue or a pull request.
