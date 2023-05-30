@@ -13,7 +13,7 @@ DW-SQL-Builder is a DataWeave library that allows you to build dynamic SQL queri
 
 ## Getting Started
 
-To get started with DW-SQL-Builder, simply clone the repository and follow the instructions in the [documentation](https://github.com/username/dw-sql-builder/docs).
+To get started with DW-SQL-Builder, simply clone the repository and follow the instructions in the [documentation](https://github.com/kchernokozinsky/dw-sql-builder/blob/main/Documentation.md).
 
 ## Usage
 
@@ -50,7 +50,7 @@ LIMIT 2000
 
 ```
 
-For more usage examples, check out the documentation.
+For more usage examples, check out the [documentation](https://github.com/kchernokozinsky/dw-sql-builder/blob/main/Documentation.md).
 
 ## TO DO
 1. group By ✅
