@@ -12,17 +12,17 @@ type JoinType =
     "FULL JOIN"       // Returns all records when there is a match in either the left or the right table
 
 type JoinedTable = {
-    leftTable: Table,                     // The left table in the join operation
-    rightTable: Table,                    // The right table in the join operation
-    joinType: JoinType,                   // The type of join operation
-    joinCondition?: Condition,             // The condition under which the tables will be joined
+    leftTable: Table,            // The left table in the join operation
+    rightTable: Table,           // The right table in the join operation
+    joinType: JoinType,          // The type of join operation
+    joinCondition?: Condition,   // The condition under which the tables will be joined
 }
 
 type SimpleJoinedTable = {
-    leftTable: String | TableAlias,                     // The left table in the join operation
-    rightTable: String | TableAlias,                    // The right table in the join operation
-    joinType: JoinType,                   // The type of join operation
-    joinCondition?: Condition,             // The condition under which the tables will be joined
+    leftTable: String | TableAlias,    // The left table in the join operation
+    rightTable: String | TableAlias,   // The right table in the join operation
+    joinType: JoinType,                // The type of join operation
+    joinCondition?: Condition,         // The condition under which the tables will be joined
 }
 
 type TableAlias = {
@@ -74,7 +74,7 @@ fun AS(table : String, alias : String) : Table =
 fun tableToSQLQuery(table: Table): String = do {
     fun alias(table : Object) = 
         if (table.alias?) 
-            "AS $(table.alias)" 
+            "AS $(table.alias as String)" 
         else ""
     fun castTable(val) = 
         val as JoinedTable default 
@@ -83,9 +83,9 @@ fun tableToSQLQuery(table: Table): String = do {
     fun toStr(val: String) = val
     fun toStr(val: TableAlias) =  val.name ++ " " ++ alias(val)
     fun toStr(val: SimpleJoinedTable) =  
-        "$(toStr(val.leftTable)) $(val.joinType) $(toStr(val.rightTable))" ++ " ON $(conditionToSQLQuery(val.joinCondition))"
+        "$(toStr(val.leftTable)) $(val.joinType) $(toStr(val.rightTable))" ++ " ON $(conditionToSQLQuery(val.joinCondition as Condition))"
     fun toStr(val: JoinedTable) =  
-        "($(toStr(castTable(val.leftTable)))) $(val.joinType) $(toStr(castTable(val.rightTable)))" ++ " ON $(conditionToSQLQuery(val.joinCondition))"
+        "($(toStr(castTable(val.leftTable)))) $(val.joinType) $(toStr(castTable(val.rightTable)))" ++ " ON $(conditionToSQLQuery(val.joinCondition as Condition))"
     ---
     "FROM $(toStr(castTable(table)))"
 }

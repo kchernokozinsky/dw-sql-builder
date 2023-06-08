@@ -25,7 +25,7 @@ fun OR(lCondition : Condition, rCondition : Condition) : Condition =
 fun BETWEEN(col: String, fst: Value): (Value) -> Between =  
     builder::Condition::BETWEEN(col, fst)
 
-fun AND (func: (String) -> Between, snd: Value): Between = 
+fun AND (func: (Value) -> Between, snd: Value): Between = 
     builder::Condition::AND(func, snd)
 
 fun NOT(condition: Condition) = builder::Condition::NOT(condition)
@@ -82,35 +82,37 @@ fun AS(table : String, alias : String) : Table =
 fun build(sql: SQLStruct, flag: Boolean = true, indent: String = "") : SQLQuery = do {
     var newLine = "\n"
     fun go(sql: SQLStruct, flag: Boolean, indent: String) = 
-    log("Indent",indent) ++
-    "(" ++ 
-    queryBeginning(sql) ++ 
-    newLine ++
-    indent ++ (if (sql.from is Table) tableToSQLQuery(sql.from) 
-               else "FROM\n" ++ go(sql.from, true, indent ++"\t")) ++
-    newLine ++
-    indent ++ 
-    "WHERE " ++ 
-    conditionToSQLQuery(sql.where) ++
-    (if (sql.groupBy?) newLine ++ 
-                       indent ++ 
-                       "GROUP BY " ++ 
-                       (sql.groupBy reduce((item, acc = "") -> acc ++ (if (acc != "") ", " else "") ++ item)) 
-     else "") ++
-    (if (sql.having?) newLine ++ 
-                      indent ++ 
-                      "HAVING " ++ 
-                      conditionToSQLQuery(sql.having) else "") ++
-    (if (sql.orderBy?) newLine ++ 
-                       "ORDER BY " ++ 
-                       (sql.orderBy reduce((item, acc = "") -> acc ++ (if (acc != "") ", " else "") ++ item)) 
-     else "") ++
-    (if (sql.limit?) newLine ++ 
-                     indent ++ 
-                     "LIMIT " ++ 
-                     sql.limit as String 
-     else "") ++
-    ")"
+        indent ++
+        "(" ++ 
+        queryBeginning(sql) ++ 
+        newLine ++
+        indent ++ 
+        (if (sql.from is Table) tableToSQLQuery(sql.from)            
+        else "FROM\n" ++ 
+            go(sql.from, true, indent ++"\t")) ++
+        (if(sql.where?)    newLine ++
+                        indent ++ 
+                        "WHERE " ++ 
+                        conditionToSQLQuery(sql.where as Condition) 
+        else "") ++
+        (if (sql.groupBy?) newLine ++ 
+                        indent ++ 
+                        "GROUP BY " ++ 
+                        (sql.groupBy reduce((item, acc = "") -> acc ++ (if (acc != "") ", " else "") ++ item)) 
+        else "") ++
+        (if (sql.having?)  newLine ++ 
+                        indent ++ 
+                        "HAVING " ++ 
+                        conditionToSQLQuery(sql.having as Condition) else "") ++
+        (if (sql.orderBy?) newLine ++ 
+                        "ORDER BY " ++ 
+                        (sql.orderBy reduce((item, acc = "") -> acc ++ (if (acc != "") ", " else "") ++ item)) 
+        else "") ++
+        (if (sql.limit?)   newLine ++ 
+                        indent ++ 
+                        "LIMIT " ++ 
+                        sql.limit as String else "") ++
+        ")"
     ---
     go(sql, flag, indent)[1 to -2]
 }

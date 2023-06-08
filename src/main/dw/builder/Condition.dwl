@@ -1,8 +1,9 @@
 %dw 2.0
-
+import * from dw::Runtime
 // --- CONDITION TYPES ---
 type Condition = 
     String |
+    Number |
     SimpleCondition |
     NestedInnerCondition | 
     Between|
@@ -89,32 +90,43 @@ fun BETWEEN(col: String, fst: Value): (Value) -> Between = (snd) -> {
     }
 }
 
-fun AND (func: (String) -> Between, snd: Value): Between = func(snd)
+fun AND (func: (Value) -> Between, snd: Value): Between = func(snd)
 
 fun NOT(condition: Condition) = not: condition
 
-fun conditionToSQLQuery(condition) = do {
-    fun castCondition(val : Condition | String | Number) = 
-        val as NestedInnerCondition default 
-        val as SimpleCondition default 
-        val as Not default
-        val as Between default
-        val as String
+
+fun conditionToSQLQuery(condition: Condition): String = do {
+
     fun conditionToSQL(condition: NestedInnerCondition) = 
-        "($(conditionToSQL(castCondition(condition.lCondition))) $(condition.biOperation) $(conditionToSQL(castCondition(condition.rCondition))))"
+        "($(conditionToSQL(castConditionToNarrow(condition.lCondition))) $(condition.biOperation) $(conditionToSQL(castConditionToNarrow(condition.rCondition))))"
 
-    fun conditionToSQL(condition: Not) = "NOT (" ++ conditionToSQL(castCondition(condition.not)) ++ ")"
+    fun conditionToSQL(condition: Not) = 
+        "NOT (" ++ 
+        conditionToSQL(castConditionToNarrow(condition.not)) ++ 
+        ")"
 
-    fun conditionToSQL(condition: Between) = condition.between.column ++ " BETWEEN " ++ condition.between.fstValue as String ++ " AND " ++ condition.between.sndValue
+    fun conditionToSQL(condition: Between) = 
+        condition.between.column ++ 
+        " BETWEEN " ++ 
+        condition.between.fstValue as String ++ 
+        " AND " ++ 
+        condition.between.sndValue
 
-   fun conditionToSQL(condition: SimpleCondition) =
+    fun conditionToSQL(condition: SimpleCondition) =
         "$(condition.lvalue) $(condition.operator)" ++
         (if (condition.rvalue?)
             " $(condition.rvalue as String)"
-        else
+         else
             "")
    fun conditionToSQL(condition: String | Number) = 
         condition as String
     ---
-    conditionToSQL(castCondition(condition default ""))
+    conditionToSQL(castConditionToNarrow(condition))
 }
+
+fun castConditionToNarrow(val : Condition | String | Number) =
+    val as NestedInnerCondition default
+    val as SimpleCondition default
+    val as Not default
+    val as Between default
+    val as String
